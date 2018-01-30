@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="pac.pac.pacdron.About">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        android:background="@color/colorButton"
+        app:title="Acerca de..."
+        app:titleTextColor="@color/colorPrimary"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="50dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentStart="false"
+        android:layout_centerVertical="true"
+        android:layerType="software"
+        android:text="Aplicación NO oficial para consultar por cédula en el Padrón Electrónico, SOLO con uso de internet.\n\n\nCreada por: \n\nAdán Mora Fallas\nEstudiante - Ing. en Computación - TEC\najmorafallas@gmail.com"
+        android:textSize="20sp" />
+
+
+</RelativeLayout>

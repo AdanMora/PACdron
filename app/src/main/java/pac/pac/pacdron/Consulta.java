@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,13 +25,21 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Iterator;
 
 import static java.net.Proxy.Type.HTTP;
 
 public class Consulta extends AppCompatActivity {
 
     Button btn_Consulta;
-    TextView resultado;
+    TextView nombre;
+    TextView provincia;
+    TextView canton;
+    TextView distrito;
+    TextView centro_votacion;
+    TextView direccion;
+    TextView numMesa;
+    TextView numElector;
     EditText inputCedula;
 
     @Override
@@ -39,7 +48,16 @@ public class Consulta extends AppCompatActivity {
         setContentView(R.layout.activity_consulta);
 
         btn_Consulta = (Button) findViewById(R.id.btn_Consultar);
-        resultado = (TextView) findViewById(R.id.txtv_resultado);
+
+        nombre = (TextView) findViewById(R.id.txt_nombre);
+        provincia = (TextView) findViewById(R.id.txt_provincia);
+        canton = (TextView) findViewById(R.id.txt_canton);
+        distrito = (TextView) findViewById(R.id.txt_distrito);
+        centro_votacion = (TextView) findViewById(R.id.txt_centro);
+        direccion = (TextView) findViewById(R.id.txt_direccion);
+        numMesa = (TextView) findViewById(R.id.txt_numMesa);
+        numElector = (TextView) findViewById(R.id.txt_numElector);
+
         inputCedula = (EditText) findViewById(R.id.et_cedula);
 
         btn_Consulta.setOnClickListener( new View.OnClickListener() {
@@ -53,45 +71,13 @@ public class Consulta extends AppCompatActivity {
                 ConsultarCedula consulta = new ConsultarCedula();
                 consulta.execute(String.valueOf(numCed));
 
+                inputCedula.setText("");
+
             }
         });
 
     }
 
-    /*private String consultarCedula(int cedula) {
-
-        HttpURLConnection connection = null;
-        StringBuilder result = new StringBuilder();
-
-        try {
-
-            URL url = new URL("http://www.tse.go.cr/dondevotarp/prRemoto.aspx/ObtenerDondeVotar");
-
-            connection = (HttpURLConnection)url.openConnection();
-            connection.setRequestProperty("numeroCedula", String.valueOf(cedula));
-            connection.setRequestMethod("GET");
-            connection.setDoInput(true);
-            connection.connect();
-
-            InputStream inputStream = connection.getInputStream();
-
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-
-            return result.toString();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            connection.disconnect();
-        }
-        return "Nada :c";
-    }*/
 
     private class ConsultarCedula extends AsyncTask<String, Void, JSONObject> {
 
@@ -145,7 +131,44 @@ public class Consulta extends AppCompatActivity {
         @Override
         protected void onPostExecute(JSONObject s) {
             System.out.println(s.toString());
-            resultado.setText(s.toString());
+            JSONObject resultadoConsulta = null;
+            Iterator keys = null;
+            try {
+                resultadoConsulta = s.getJSONObject("d").getJSONObject("lista");
+                keys = resultadoConsulta.keys();
+
+                if (!keys.hasNext()){
+                    Toast toast = Toast.makeText(getApplicationContext(), "No se encontró la cédula digitada", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+
+                    while (keys.hasNext()) {
+                        //based on you key types
+                        String keyStr = (String)keys.next();
+                        System.out.println(keyStr);
+
+                        if (keyStr.equals("nombreCompleto")){
+                            nombre.setText(resultadoConsulta.getString(keyStr));
+                        } else if (keyStr.equals("descripcionProvincia")) {
+                            provincia.setText(resultadoConsulta.getString(keyStr));
+                        } else if (keyStr.equals("descripcionCanton")) {
+                            canton.setText(resultadoConsulta.getString(keyStr));
+                        } else if (keyStr.equals("descripcionDistrito")) {
+                            distrito.setText(resultadoConsulta.getString(keyStr));
+                        } else if (keyStr.equals("nombreCentroVotacion")) {
+                            centro_votacion.setText(resultadoConsulta.getString(keyStr));
+                        } else if (keyStr.equals("junta")) {
+                            numMesa.setText(resultadoConsulta.getString(keyStr));
+                        } else if (keyStr.equals("numeroElector")) {
+                            numElector.setText(resultadoConsulta.getString(keyStr));
+                        } else if (keyStr.equals("direccionEscuela")) {
+                            direccion.setText(resultadoConsulta.getString(keyStr));
+                        }
+                    }
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
