@@ -17,7 +17,12 @@ public class Consulta extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_consulta);
 
-        btn_Consulta = (Button);
+        btn_Consulta = findViewById(R.id.btn_Consultar);
+        resultado = findViewById(R.id.txtv_resultado);
+        inputCedula = findViewById(R.id.et_cedula);
+
+        int numCed = Integer.parseInt(inputCedula.getText().toString());
+
 
     }
 }
