@@ -7,13 +7,6 @@
     tools:context="pac.pac.pacdron.Consulta"
     android:orientation="vertical">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_live_help_black_24dp" />
-
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="match_parent"
@@ -64,7 +57,26 @@
             android:textColor="@color/colorPrimary"
             tools:layout_editor_absoluteX="92dp"
             tools:layout_editor_absoluteY="261dp" />
+
+        <ImageButton
+            android:id="@+id/btn_camara"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:onClick="launchScanner"
+            android:src="@drawable/ic_photo_camera_black_24dp"
+            android:visibility="invisible"/>
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="** Poner ceros en la cédula"
+        android:textSize="12sp"
+        tools:layout_editor_absoluteX="73dp"
+        tools:layout_editor_absoluteY="114dp" />
 
     <Space
         android:layout_width="match_parent"
@@ -97,6 +109,38 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Número Mesa:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txt_numMesa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"/>
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Número Elector:"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/txt_numElector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -176,36 +220,19 @@
                 android:textStyle="bold" />
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Número Mesa:"
-                android:textSize="18sp" />
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="15dp" />
 
             <TextView
-                android:id="@+id/txt_numMesa"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Número Elector:"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/txt_numElector"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_alignParentLeft="false"
+                android:layout_alignParentStart="false"
+                android:layout_centerVertical="true"
+                android:layerType="software"
+                android:text="Aplicación NO oficial para consultar por cédula en el Padrón Electoral, SOLO con uso de internet.\n\nCreada por: \n\nAdán Mora Fallas\nEstudiante - Ing. en Computación - TEC\najmorafallas@gmail.com"
+                android:textSize="15sp" />
 
         </LinearLayout>
 

@@ -1,10 +1,16 @@
 package pac.pac.pacdron;
 
+import android.Manifest;
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -13,23 +19,22 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Iterator;
 
-import static java.net.Proxy.Type.HTTP;
+import com.crashlytics.android.Crashlytics;
+
+import io.fabric.sdk.android.Fabric;
 
 public class Consulta extends AppCompatActivity {
+
+    private static final int ZXING_CAMERA_PERMISSION = 1;
+    private Class<?> mClss;
 
     Button btn_Consulta;
     TextView nombre;
@@ -44,7 +49,9 @@ public class Consulta extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_consulta);
 
         btn_Consulta = (Button) findViewById(R.id.btn_Consultar);
@@ -60,17 +67,38 @@ public class Consulta extends AppCompatActivity {
 
         inputCedula = (EditText) findViewById(R.id.et_cedula);
 
+
         btn_Consulta.setOnClickListener( new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
                 // TODO Auto-generated method stub
 
-                int numCed = Integer.parseInt(inputCedula.getText().toString());
+                String cedStr = inputCedula.getText().toString();
 
-                ConsultarCedula consulta = new ConsultarCedula();
-                consulta.execute(String.valueOf(numCed));
+                InputMethodManager imm = (InputMethodManager)getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
+                v.setEnabled(false);
+
+                if (cedStr.isEmpty() || cedStr.length() != 9){
+                    Toast toast = Toast.makeText(getApplicationContext(), "Digite un número de cédula válido.", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+
+                    ProgressDialog progress = new ProgressDialog(v.getContext());
+                    progress.setTitle("Espere");
+                    progress.setMessage("Cargando consulta...");
+                    progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+                    progress.show();
+
+                    ConsultarCedula consulta = new ConsultarCedula();
+                    consulta.execute(cedStr);
+
+                    progress.dismiss();
+                }
+
+                v.setEnabled(true);
                 inputCedula.setText("");
 
             }
@@ -78,8 +106,41 @@ public class Consulta extends AppCompatActivity {
 
     }
 
+    public void launchScanner(View v) {
+        launchActivity(Scanner.class);
+    }
+
+    public void launchActivity(Class<?> clss) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            mClss = clss;
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA}, ZXING_CAMERA_PERMISSION);
+        } else {
+            Intent intent = new Intent(this, clss);
+            startActivity(intent);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case ZXING_CAMERA_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(mClss != null) {
+                        Intent intent = new Intent(this, mClss);
+                        startActivity(intent);
+                    }
+                } else {
+                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
+                }
+                return;
+        }
+    }
+
 
     private class ConsultarCedula extends AsyncTask<String, Void, JSONObject> {
+
 
         @Override
         protected JSONObject doInBackground(String... cedula) {
@@ -88,7 +149,7 @@ public class Consulta extends AppCompatActivity {
             StringBuilder result = new StringBuilder();
 
             try {
-
+                System.out.println(cedula[0]);
                 JSONObject ced = new JSONObject();
                 ced.put("numeroCedula",cedula[0]);
 
@@ -106,6 +167,8 @@ public class Consulta extends AppCompatActivity {
                 os.close();
 
                 connection.connect();
+
+
 
                 InputStream inputStream = connection.getInputStream();
 
@@ -130,7 +193,6 @@ public class Consulta extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(JSONObject s) {
-            System.out.println(s.toString());
             JSONObject resultadoConsulta = null;
             Iterator keys = null;
             try {
@@ -143,9 +205,7 @@ public class Consulta extends AppCompatActivity {
                 } else {
 
                     while (keys.hasNext()) {
-                        //based on you key types
                         String keyStr = (String)keys.next();
-                        System.out.println(keyStr);
 
                         if (keyStr.equals("nombreCompleto")){
                             nombre.setText(resultadoConsulta.getString(keyStr));
