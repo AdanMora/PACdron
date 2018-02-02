@@ -63,7 +63,7 @@ public class Consulta extends AppCompatActivity {
         setContentView(R.layout.activity_consulta);
 
         btn_Consulta = (Button) findViewById(R.id.btn_Consultar);
-        scanner_btn = (ImageButton) findViewById(R.id.btn_camara);
+        //scanner_btn = (ImageButton) findViewById(R.id.btn_camara);
 
         nombre = (TextView) findViewById(R.id.txt_nombre);
         provincia = (TextView) findViewById(R.id.txt_provincia);
@@ -117,7 +117,7 @@ public class Consulta extends AppCompatActivity {
 
         final Activity activity = this;
 
-        scanner_btn.setOnClickListener(new View.OnClickListener() {
+        /*scanner_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 IntentIntegrator integrator = new IntentIntegrator(activity);
@@ -128,41 +128,9 @@ public class Consulta extends AppCompatActivity {
                 integrator.setBarcodeImageEnabled(false);
                 integrator.initiateScan();
             }
-        });
+        });*/
 
     }
-
-    /*public void launchScanner(View v) {
-        launchActivity(Scanner.class);
-    }
-
-    public void launchActivity(Class<?> clss) {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            mClss = clss;
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.CAMERA}, ZXING_CAMERA_PERMISSION);
-        } else {
-            Intent intent = new Intent(this, clss);
-            startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,  String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case ZXING_CAMERA_PERMISSION:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(mClss != null) {
-                        Intent intent = new Intent(this, mClss);
-                        startActivity(intent);
-                    }
-                } else {
-                    Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
-                }
-                return;
-        }
-    }*/
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
@@ -210,7 +178,11 @@ public class Consulta extends AppCompatActivity {
 
                 connection.connect();
 
-
+                if (connection.getResponseCode() >= 300 && connection.getResponseCode() < 200){
+                    Toast toast = Toast.makeText(getApplicationContext(), connection.getResponseCode() + ": Error de servidor...", Toast.LENGTH_SHORT);
+                    toast.show();
+                    return null;
+                }
 
                 InputStream inputStream = connection.getInputStream();
 
@@ -237,39 +209,41 @@ public class Consulta extends AppCompatActivity {
         protected void onPostExecute(JSONObject s) {
             JSONObject resultadoConsulta = null;
             Iterator keys = null;
-            try {
-                resultadoConsulta = s.getJSONObject("d").getJSONObject("lista");
-                keys = resultadoConsulta.keys();
+            if (s != null) {
+                try {
+                    resultadoConsulta = s.getJSONObject("d").getJSONObject("lista");
+                    keys = resultadoConsulta.keys();
 
-                if (!keys.hasNext()){
-                    Toast toast = Toast.makeText(getApplicationContext(), "No se encontró la cédula digitada", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else {
+                    if (!keys.hasNext()) {
+                        Toast toast = Toast.makeText(getApplicationContext(), "No se encontró la cédula digitada", Toast.LENGTH_SHORT);
+                        toast.show();
+                    } else {
 
-                    while (keys.hasNext()) {
-                        String keyStr = (String)keys.next();
+                        while (keys.hasNext()) {
+                            String keyStr = (String) keys.next();
 
-                        if (keyStr.equals("nombreCompleto")){
-                            nombre.setText(resultadoConsulta.getString(keyStr));
-                        } else if (keyStr.equals("descripcionProvincia")) {
-                            provincia.setText(resultadoConsulta.getString(keyStr));
-                        } else if (keyStr.equals("descripcionCanton")) {
-                            canton.setText(resultadoConsulta.getString(keyStr));
-                        } else if (keyStr.equals("descripcionDistrito")) {
-                            distrito.setText(resultadoConsulta.getString(keyStr));
-                        } else if (keyStr.equals("nombreCentroVotacion")) {
-                            centro_votacion.setText(resultadoConsulta.getString(keyStr));
-                        } else if (keyStr.equals("junta")) {
-                            numMesa.setText(resultadoConsulta.getString(keyStr));
-                        } else if (keyStr.equals("numeroElector")) {
-                            numElector.setText(resultadoConsulta.getString(keyStr));
-                        } else if (keyStr.equals("direccionEscuela")) {
-                            direccion.setText(resultadoConsulta.getString(keyStr));
+                            if (keyStr.equals("nombreCompleto")) {
+                                nombre.setText(resultadoConsulta.getString(keyStr));
+                            } else if (keyStr.equals("descripcionProvincia")) {
+                                provincia.setText(resultadoConsulta.getString(keyStr));
+                            } else if (keyStr.equals("descripcionCanton")) {
+                                canton.setText(resultadoConsulta.getString(keyStr));
+                            } else if (keyStr.equals("descripcionDistrito")) {
+                                distrito.setText(resultadoConsulta.getString(keyStr));
+                            } else if (keyStr.equals("nombreCentroVotacion")) {
+                                centro_votacion.setText(resultadoConsulta.getString(keyStr));
+                            } else if (keyStr.equals("junta")) {
+                                numMesa.setText(resultadoConsulta.getString(keyStr));
+                            } else if (keyStr.equals("numeroElector")) {
+                                numElector.setText(resultadoConsulta.getString(keyStr));
+                            } else if (keyStr.equals("direccionEscuela")) {
+                                direccion.setText(resultadoConsulta.getString(keyStr));
+                            }
                         }
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
         }
     }

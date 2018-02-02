@@ -58,14 +58,12 @@
             tools:layout_editor_absoluteX="92dp"
             tools:layout_editor_absoluteY="261dp" />
 
-        <ImageButton
+        <!--<ImageButton
             android:id="@+id/btn_camara"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:onClick="launchScanner"
-            android:src="@drawable/ic_photo_camera_black_24dp"
-            android:visibility="visible"/>
+            android:src="@drawable/ic_photo_camera_black_24dp"/>-->
 
     </LinearLayout>
 
@@ -231,7 +229,7 @@
                 android:layout_alignParentStart="false"
                 android:layout_centerVertical="true"
                 android:layerType="software"
-                android:text="Aplicación NO oficial para consultar por cédula en el Padrón Electoral, SOLO con uso de internet.\n\nCreada por: \n\nAdán Mora Fallas\nEstudiante - Ing. en Computación - TEC\najmorafallas@gmail.com"
+                android:text="Aplicación NO oficial para consultar por cédula en el Padrón Electoral, SOLO con uso de internet.\n\nCreada por: \n\nAdán Mora Fallas\nEstudiante - Ing. en Computación - TEC\najmorafallas@gmail.com\n02/02/2017"
                 android:textSize="15sp" />
 
         </LinearLayout>
