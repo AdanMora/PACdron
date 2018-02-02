@@ -1,24 +1,16 @@
 package pac.pac.pacdron;
 
-import android.Manifest;
-import android.app.Fragment;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +23,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 
 import com.crashlytics.android.Crashlytics;
@@ -38,6 +34,9 @@ import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.ContentViewEvent;
 
 import io.fabric.sdk.android.Fabric;
+
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 public class Consulta extends AppCompatActivity {
 
@@ -54,6 +53,7 @@ public class Consulta extends AppCompatActivity {
     TextView numMesa;
     TextView numElector;
     EditText inputCedula;
+    ImageButton scanner_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +63,7 @@ public class Consulta extends AppCompatActivity {
         setContentView(R.layout.activity_consulta);
 
         btn_Consulta = (Button) findViewById(R.id.btn_Consultar);
+        scanner_btn = (ImageButton) findViewById(R.id.btn_camara);
 
         nombre = (TextView) findViewById(R.id.txt_nombre);
         provincia = (TextView) findViewById(R.id.txt_provincia);
@@ -114,9 +115,24 @@ public class Consulta extends AppCompatActivity {
             }
         });
 
+        final Activity activity = this;
+
+        scanner_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                IntentIntegrator integrator = new IntentIntegrator(activity);
+                integrator.setDesiredBarcodeFormats(new ArrayList<>(Arrays.asList("PDF_417", "QR_CODE")));
+                integrator.setPrompt("Scan");
+                integrator.setCameraId(0);
+                integrator.setBeepEnabled(true);
+                integrator.setBarcodeImageEnabled(false);
+                integrator.initiateScan();
+            }
+        });
+
     }
 
-    public void launchScanner(View v) {
+    /*public void launchScanner(View v) {
         launchActivity(Scanner.class);
     }
 
@@ -145,6 +161,22 @@ public class Consulta extends AppCompatActivity {
                     Toast.makeText(this, "Please grant camera permission to use the QR Scanner", Toast.LENGTH_SHORT).show();
                 }
                 return;
+        }
+    }*/
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if(result != null){
+            if(result.getContents()==null){
+                Toast.makeText(this, "You cancelled the scanning", Toast.LENGTH_LONG).show();
+            }
+            else {
+                Toast.makeText(this, "Resultado: " + result.getContents() + "  Formato: " + result.getFormatName(),Toast.LENGTH_LONG).show();
+                System.out.println(result.getContents());
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
