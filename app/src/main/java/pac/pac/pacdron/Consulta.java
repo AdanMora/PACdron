@@ -1,6 +1,7 @@
 package pac.pac.pacdron;
 
 import android.Manifest;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,10 +10,15 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +34,8 @@ import java.net.URL;
 import java.util.Iterator;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -86,11 +94,13 @@ public class Consulta extends AppCompatActivity {
                     toast.show();
                 } else {
 
-                    ProgressDialog progress = new ProgressDialog(v.getContext());
-                    progress.setTitle("Espere");
-                    progress.setMessage("Cargando consulta...");
-                    progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
-                    progress.show();
+                    Answers.getInstance().logContentView(new ContentViewEvent()
+                            .putContentName("Consulta")
+                            .putContentType("Consulta")
+                            .putContentId("consulta"));
+
+                    ProgressDialog progress = ProgressDialog.show(Consulta.this, "",
+                            "Cargando consulta. Por favor espere...", true,false);
 
                     ConsultarCedula consulta = new ConsultarCedula();
                     consulta.execute(cedStr);

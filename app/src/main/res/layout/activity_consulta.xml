@@ -65,7 +65,7 @@
             android:background="@android:color/transparent"
             android:onClick="launchScanner"
             android:src="@drawable/ic_photo_camera_black_24dp"
-            android:visibility="invisible"/>
+            android:visibility="visible"/>
 
     </LinearLayout>
 
